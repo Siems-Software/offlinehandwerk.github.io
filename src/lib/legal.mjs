@@ -2,6 +2,13 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { languages } from '../config.mjs';
 
+const splitHeadingId = (value) => {
+  const idMatch = /^(.*) \{#([A-Za-z0-9-]+)\}$/.exec(value.trim());
+  return idMatch ? { text: idMatch[1], id: idMatch[2] } : { text: value.trim() };
+};
+
+const withId = (block, id) => (id ? { ...block, id } : block);
+
 export const parseLegalBody = (body) =>
   body
     .trim()
@@ -9,21 +16,21 @@ export const parseLegalBody = (body) =>
     .filter(Boolean)
     .map((chunk) => {
       const breakAt = chunk.indexOf('\n');
-      const heading = (breakAt === -1 ? chunk : chunk.slice(0, breakAt)).trim();
+      const heading = splitHeadingId(breakAt === -1 ? chunk : chunk.slice(0, breakAt));
       const rest = breakAt === -1 ? '' : chunk.slice(breakAt + 1).trim();
-      const idMatch = /^(.*) \{#([A-Za-z0-9-]+)\}$/.exec(heading);
-      const title = idMatch ? idMatch[1] : heading;
       const blocks = rest
         ? rest
             .split(/\n{2,}/)
             .map((chunk) => chunk.trim())
             .filter(Boolean)
             .map((chunk) => {
-              const heading = /^### ([^\n]+)$/.exec(chunk);
-              return heading ? { type: 'h3', text: heading[1].trim() } : { type: 'p', text: chunk };
+              const subheading = /^### ([^\n]+)$/.exec(chunk);
+              if (!subheading) return { type: 'p', text: chunk };
+              const parsed = splitHeadingId(subheading[1]);
+              return withId({ type: 'h3', text: parsed.text }, parsed.id);
             })
         : [];
-      return idMatch ? { id: idMatch[2], title, blocks } : { title, blocks };
+      return withId({ title: heading.text, blocks }, heading.id);
     });
 
 export const parseLegalDocument = (source) => {

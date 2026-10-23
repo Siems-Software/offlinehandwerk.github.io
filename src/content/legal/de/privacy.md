@@ -37,7 +37,7 @@ Wenn du uns kontaktierst, verarbeiten wir deine Angaben, also Name, Kontaktdaten
 
 ### Lokale Datenspeicherung
 
-Alle Inhalte, die du in der App erfasst, zum Beispiel Kalkulationen, Kunden-, Mitarbeiter- und Betriebsdaten sowie dein Firmenlogo, werden ausschließlich lokal auf deinem Gerät gespeichert. Wir haben darauf keinen Zugriff und übertragen sie nicht an eigene Server. Für die Rechtmäßigkeit der Verarbeitung dieser Daten bist du selbst verantwortlich.
+Alle Inhalte, die du in der App erfasst, zum Beispiel Kalkulationen, Kunden-, Mitarbeiter- und Betriebsdaten sowie dein Firmenlogo, werden ausschließlich lokal auf deinem Gerät gespeichert. Wir haben darauf keinen Zugriff und übertragen sie nicht an eigene Server. Die App legt keine automatische Cloud-Sicherung dieser Inhalte an. Auf Android nimmt sie an der Systemsicherung (Auto Backup) nicht teil. Für die Rechtmäßigkeit der Verarbeitung dieser Daten bist du selbst verantwortlich.
 
 Die App enthält keine Analyse- oder Crash-Reporting-Dienste und erstellt keine Nutzungsprofile.
 
@@ -55,9 +55,21 @@ Zur Verwaltung und Freischaltung gekaufter Funktionen nutzen wir RevenueCat, Inc
 
 Wenn du PDFs oder Sicherungen teilst, druckst oder per E-Mail versendest, übergibt die App die Datei an die App oder den Dienst, den du auswählst. Wir erhalten diese Daten nicht.
 
+Mit Premium kannst du die lokalen Daten in der App sichern und wiederherstellen. Der Export erzeugt eine unverschlüsselte JSON-Datei mit Kunden-, Kalkulations- und Betriebsdaten. Kaufbelege sind nicht enthalten. Du wählst den Speicherort. Wir laden die Datei nicht hoch.
+
 ### Speicherdauer
 
-Lokale Daten bleiben auf deinem Gerät, bis du sie löschst, die App zurücksetzt oder deinstallierst.
+Lokale Daten bleiben auf deinem Gerät, bis du sie in der App löschst, die App-Daten löschst, die App zurücksetzt oder sie deinstallierst. Wie Kaufdaten bei RevenueCat gelöscht werden, steht unter [Löschung deiner Daten](#loeschung).
+
+### Löschung deiner Daten {#loeschung}
+
+Ein Nutzerkonto gibt es nicht. Inhalte der App löschst du auf dem Gerät: in der App, durch Löschen der App-Daten oder Zurücksetzen der App, oder durch Deinstallieren. Wir haben diese Inhalte nicht und können sie nicht aus der Ferne löschen. Dateien, die du bereits exportiert oder weitergegeben hast, etwa PDFs und Sicherungen, bleiben beim Empfänger oder an dem Speicherort, den du gewählt hast.
+
+Kaufdaten des Premium-Abos verarbeitet RevenueCat, Inc. (USA). Dabei erhält RevenueCat eine pseudonyme Kennung sowie Kauf- und Transaktionsdaten, nicht die Inhalte der App. Die Zahlungsabwicklung selbst liegt bei Google Play Billing oder Apple. Die Löschung der bei RevenueCat gespeicherten Kaufdaten forderst du bei uns an: [info@offlinehandwerk.de](mailto:info@offlinehandwerk.de). Wenn die App in der Abo-Verwaltung eine Kennung anzeigt, gib sie mit an.
+
+Wir löschen den zugehörigen Kundendatensatz dann im RevenueCat-Dashboard oder über die API. Nach den öffentlichen Angaben von RevenueCat entfernt das die bei RevenueCat gespeicherte Kaufhistorie dieses Kunden. RevenueCat beschreibt das als ausreichend für ein Löschverlangen nach der DSGVO. Auf unsere Weisung antwortet RevenueCat innerhalb einer angemessenen Frist. Personenbezogene Daten können danach noch aufbewahrt werden, soweit die eigene Aufbewahrungsregel oder gesetzliche Pflichten, Streitfälle und Verträge das verlangen. Eine konkrete Frist für diese Endnutzer-Kaufdaten veröffentlicht RevenueCat nicht. Einzelheiten stehen in der [Datenschutzerklärung von RevenueCat](https://www.revenuecat.com/privacy-policy).
+
+Das Löschen der App oder des Datensatzes bei RevenueCat kündigt das Abonnement nicht. Kündige es gesondert bei Google Play oder im Apple App Store. Kaufnachweise, die Google oder Apple selbst führen, richten sich nach deren eigenen Regeln: [Datenschutzerklärung von Google](https://policies.google.com/privacy) und [Datenschutzerklärung von Apple](https://www.apple.com/legal/privacy/).
 
 ### Bereitstellung personenbezogener Daten
 
