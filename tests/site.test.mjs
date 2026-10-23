@@ -384,8 +384,8 @@ test('privacy page states shared duties once and keeps website and app sections 
     assert.ok(website.includes(lang === 'de' ? 'IP-Adresse' : 'IP address'));
     const themeStorage =
       lang === 'de'
-        ? 'Die gewählte Darstellung (hell oder dunkel) wird lokal im Browser gespeichert und nicht übermittelt.'
-        : 'The chosen appearance (light or dark) is stored locally in the browser and is not transmitted.';
+        ? 'Die gewählte Darstellung (hell oder dunkel) wird lokal im Browser gespeichert und nicht übermittelt. Dies ist für die von dir gewünschte Funktion unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG).'
+        : 'The chosen appearance (light or dark) is stored locally in the browser and is not transmitted. This is strictly necessary for the functionality you requested (Section 25(2)(2) TDDDG).';
     assert.equal(website.includes(themeStorage), true);
     assert.equal(app.includes(themeStorage), false);
     assert.ok(!website.includes('RevenueCat'));
@@ -394,8 +394,8 @@ test('privacy page states shared duties once and keeps website and app sections 
     assert.ok(!app.includes('Data Privacy Framework'));
     const transfer =
       lang === 'de'
-        ? 'Für die Übermittlung in die USA sehen die Vertragsbedingungen von RevenueCat EU-Standardvertragsklauseln vor (Art. 46 Abs. 2 lit. c DSGVO).'
-        : "For the transfer to the United States, RevenueCat's contract terms provide for EU Standard Contractual Clauses (Art. 46(2)(c) GDPR).";
+        ? 'Für die Übermittlung in die USA sehen die Vertragsbedingungen (Data Processing Addendum) von RevenueCat EU-Standardvertragsklauseln vor (Art. 46 Abs. 2 lit. c DSGVO).'
+        : "For transfers to the United States, RevenueCat's contractual terms (Data Processing Addendum) provide for EU Standard Contractual Clauses (Art. 46(2)(c) GDPR).";
     const officer =
       lang === 'de'
         ? 'Ein Datenschutzbeauftragter ist nicht benannt, da keine gesetzliche Pflicht dazu besteht (§ 38 BDSG).'
@@ -412,6 +412,38 @@ test('privacy page states shared duties once and keeps website and app sections 
     );
     assert.equal(page.$('a[href="tel:+4917684328001"]').length, 1);
     assert.equal(page.$('main').text().split(officer).length - 1, 1);
+    const contact = page.$('#website').parent().next('section').text();
+    const revenueCat =
+      lang === 'de'
+        ? 'RevenueCat speichert die Kaufdaten, solange dies für die Bereitstellung der Käufe und die Erfüllung gesetzlicher Aufbewahrungspflichten erforderlich ist.'
+        : 'RevenueCat retains purchase data for as long as necessary to provide purchased features and comply with statutory retention obligations.';
+    assert.ok(
+      contact.includes(
+        lang === 'de'
+          ? 'E-Mails werden über das E-Mail-Postfach der IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, Deutschland, empfangen und gespeichert.'
+          : 'Emails are received and stored through the email mailbox of IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, Germany.',
+      ),
+    );
+    assert.ok(app.includes(revenueCat));
+    assert.ok(
+      app.includes(
+        lang === 'de'
+          ? 'Die Bereitstellung personenbezogener Daten ist weder gesetzlich noch vertraglich vorgeschrieben.'
+          : 'Providing personal data is neither a statutory nor a contractual requirement.',
+      ),
+    );
+    const objectionHeading = lang === 'de' ? 'Widerspruchsrecht' : 'Right to object';
+    assert.equal(
+      page.$('main h3').filter((_, node) => page.$(node).text() === objectionHeading).length,
+      1,
+    );
+    assert.ok(
+      page
+        .$('main')
+        .text()
+        .includes(lang === 'de' ? 'Art. 21 Abs. 1 und 4 DSGVO' : 'Art. 21(1) and (4) GDPR'),
+    );
+    assert.equal(app.includes('Data Privacy Framework'), false);
     assert.ok(
       page
         .$('main')
@@ -554,6 +586,11 @@ test('footer shows only privacy and imprint, outside the main navigation', () =>
     assert.ok(
       footerHtml.indexOf(locales[lang].footerBefore) < footerHtml.indexOf('class="footer-flag"'),
     );
+    const flag = $('footer p.small svg.footer-flag')[0];
+    assert.equal(flag.prev.type, 'text');
+    assert.equal(flag.prev.data, `${locales[lang].footerBefore} `);
+    assert.equal(flag.next.type, 'text');
+    assert.equal(flag.next.data, ` ${locales[lang].footerAfter}`);
     if (locales[lang].footerAfter) {
       assert.ok(footerHtml.includes(locales[lang].footerAfter));
       assert.ok(

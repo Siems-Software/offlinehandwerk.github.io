@@ -1,6 +1,6 @@
 ---
 title: "Datenschutz"
-updated: "Stand: Oktober 2026"
+updated: "Stand: 23. Oktober 2026"
 ---
 
 ## 1. Verantwortlicher
@@ -27,11 +27,11 @@ Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse lie
 
 Diese Website setzt keine Cookies, nutzt keine Analyse- oder Tracking-Dienste und bindet keine Inhalte externer Anbieter ein.
 
-Die gewählte Darstellung (hell oder dunkel) wird lokal im Browser gespeichert und nicht übermittelt.
+Die gewählte Darstellung (hell oder dunkel) wird lokal im Browser gespeichert und nicht übermittelt. Dies ist für die von dir gewünschte Funktion unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG).
 
 ## 3. Kontakt per E-Mail oder Telefon
 
-Wenn du uns kontaktierst, verarbeiten wir deine Angaben, also Name, Kontaktdaten und den Inhalt deiner Nachricht, um deine Anfrage zu beantworten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, soweit die Anfrage einen Vertrag betrifft, und im Übrigen Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse liegt in der Beantwortung deiner Anfrage. Wir löschen die Daten, sobald sie nicht mehr benötigt werden, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
+Wenn du uns kontaktierst, verarbeiten wir deine Angaben, also Name, Kontaktdaten und den Inhalt deiner Nachricht, um deine Anfrage zu beantworten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, soweit die Anfrage einen Vertrag betrifft, und im Übrigen Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse liegt in der Beantwortung deiner Anfrage. E-Mails werden über das E-Mail-Postfach der IONOS SE, Elgendorfer Str. 57, 56410 Montabaur, Deutschland, empfangen und gespeichert. Wir löschen die Daten, sobald sie nicht mehr benötigt werden, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
 
 ## 4. Die App OfflineHandwerk {#app}
 
@@ -49,7 +49,7 @@ Die App greift nur dann auf deine Fotomediathek zu, wenn du ein Firmenlogo ausw�
 
 Käufe werden über den Apple App Store oder Google Play abgewickelt. Für die Verarbeitung der Zahlungsdaten sind Apple und Google eigenständig verantwortlich.
 
-Zur Verwaltung und Freischaltung gekaufter Funktionen nutzen wir RevenueCat, Inc. (USA). RevenueCat verarbeitet dazu eine pseudonyme Nutzerkennung sowie Kauf- und Transaktionsdaten. Inhalte aus der App, etwa Kalkulationen oder Kundendaten, werden nicht übermittelt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, denn die Verarbeitung ist erforderlich, um dir die gekauften Funktionen bereitzustellen. Für die Übermittlung in die USA sehen die Vertragsbedingungen von RevenueCat EU-Standardvertragsklauseln vor (Art. 46 Abs. 2 lit. c DSGVO).
+Zur Verwaltung und Freischaltung gekaufter Funktionen nutzen wir RevenueCat, Inc. (USA). RevenueCat verarbeitet dazu eine pseudonyme Nutzerkennung sowie Kauf- und Transaktionsdaten. Inhalte aus der App, etwa Kalkulationen oder Kundendaten, werden nicht übermittelt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, denn die Verarbeitung ist erforderlich, um dir die gekauften Funktionen bereitzustellen. Für die Übermittlung in die USA sehen die Vertragsbedingungen (Data Processing Addendum) von RevenueCat EU-Standardvertragsklauseln vor (Art. 46 Abs. 2 lit. c DSGVO). RevenueCat speichert die Kaufdaten, solange dies für die Bereitstellung der Käufe und die Erfüllung gesetzlicher Aufbewahrungspflichten erforderlich ist.
 
 ### Teilen und Export
 
@@ -59,8 +59,16 @@ Wenn du PDFs oder Sicherungen teilst, druckst oder per E-Mail versendest, überg
 
 Lokale Daten bleiben auf deinem Gerät, bis du sie löschst, die App zurücksetzt oder deinstallierst.
 
+### Bereitstellung personenbezogener Daten
+
+Die Bereitstellung personenbezogener Daten ist weder gesetzlich noch vertraglich vorgeschrieben. Ohne die Verbindungsdaten kann die Website nicht ausgeliefert werden; ohne die Kaufdaten können gekaufte Funktionen nicht freigeschaltet werden. Eine automatisierte Entscheidungsfindung einschließlich Profiling findet nicht statt.
+
 ## 5. Deine Rechte
 
-Du hast das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16 DSGVO), Löschung (Art. 17 DSGVO), Einschränkung der Verarbeitung (Art. 18 DSGVO) und Datenübertragbarkeit (Art. 20 DSGVO). Gegen eine Verarbeitung auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO kannst du Widerspruch einlegen (Art. 21 DSGVO).
+Du hast das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16 DSGVO), Löschung (Art. 17 DSGVO), Einschränkung der Verarbeitung (Art. 18 DSGVO) und Datenübertragbarkeit (Art. 20 DSGVO).
+
+### Widerspruchsrecht
+
+Du hast das Recht, aus Gründen, die sich aus deiner besonderen Situation ergeben, jederzeit gegen die Verarbeitung deiner personenbezogenen Daten auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO Widerspruch einzulegen. Im Fall eines Widerspruchs verarbeiten wir die Daten nicht mehr, es sei denn, wir können zwingende schutzwürdige Gründe nachweisen, die deine Interessen, Rechte und Freiheiten überwiegen, oder die Verarbeitung dient der Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen (Art. 21 Abs. 1 und 4 DSGVO).
 
 Du hast außerdem das Recht, dich bei einer Datenschutz-Aufsichtsbehörde zu beschweren (Art. 77 DSGVO). Für uns ist zuständig: Der Landesbeauftragte für den Datenschutz und die Informationsfreiheit Rheinland-Pfalz, Hintere Bleiche 34, 55116 Mainz.
