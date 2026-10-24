@@ -1,4 +1,4 @@
-Copyright (c) 2026 Jan Siems. All rights reserved except as granted by the PolyForm Noncommercial License 1.0.0 (see LICENSE).
+Copyright (c) 2026 Siems Software (https://offlinehandwerk.de). All rights reserved except as granted by the PolyForm Noncommercial License 1.0.0 (see LICENSE).
 
 # OfflineHandwerk Website
 
@@ -88,7 +88,7 @@ Browser checks use Mullvad Browser, including accessibility tooling in an isolat
 
 ## License
 
-PolyForm Noncommercial 1.0.0 (see [LICENSE](LICENSE)).
+Copyright (c) 2026 Siems Software (https://offlinehandwerk.de). PolyForm Noncommercial 1.0.0 (see [LICENSE](LICENSE)).
 
 ## Contact
 
