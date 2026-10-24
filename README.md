@@ -1,49 +1,75 @@
 Copyright (c) 2026 Jan Siems. All rights reserved except as granted by the PolyForm Noncommercial License 1.0.0 (see LICENSE).
 
-# OfflineHandwerk Website (`offlinehandwerk.github.io`)
+# OfflineHandwerk Website
 
-Static DE/EN product website with one privacy page, an imprint page, and German terms at `/de/agb/`. Older app and website privacy URLs redirect to the matching section. Astro builds plain HTML and CSS with its built-in i18n routing: no runtime JavaScript, cookies, browser storage, analytics, external fonts or CDN assets.
-
-## Website / target URLs
+German-language product website for tradespeople (Handwerker), with an English translation.
 
 **Site:** [https://offlinehandwerk.de/](https://offlinehandwerk.de/)
 
-- [Deutsch](https://offlinehandwerk.de/de/) (default)
-- [English](https://offlinehandwerk.de/en/)
+## Pages
 
-### Custom domain
+German is the default locale. The project root repeats the German home page. `/de/` and `/en/` stay prefixed. Slugs live in `src/config.mjs`.
 
-GitHub Pages publishes this repository on `offlinehandwerk.de`. The domain is served at the root, so Astro `site` is `https://offlinehandwerk.de` and `base` is `/`. `public/CNAME` contains `offlinehandwerk.de`. `site.origin` and `site.base` in `src/config.mjs` match those values.
+- Home: [https://offlinehandwerk.de/](https://offlinehandwerk.de/) and [https://offlinehandwerk.de/de/](https://offlinehandwerk.de/de/)
+- English home: [https://offlinehandwerk.de/en/](https://offlinehandwerk.de/en/)
+- Datenschutz: [https://offlinehandwerk.de/de/datenschutz/](https://offlinehandwerk.de/de/datenschutz/)
+- Privacy: [https://offlinehandwerk.de/en/privacy/](https://offlinehandwerk.de/en/privacy/)
+- Impressum: [https://offlinehandwerk.de/de/impressum/](https://offlinehandwerk.de/de/impressum/)
+- Imprint: [https://offlinehandwerk.de/en/imprint/](https://offlinehandwerk.de/en/imprint/)
+- AGB: [https://offlinehandwerk.de/de/agb/](https://offlinehandwerk.de/de/agb/). There is no English terms page. The German footer links to it; the language switch on this page goes to the English home.
+- Anleitung: [https://offlinehandwerk.de/de/anleitung/](https://offlinehandwerk.de/de/anleitung/)
+- Manual: [https://offlinehandwerk.de/en/manual/](https://offlinehandwerk.de/en/manual/)
+- Not found: `src/pages/404.astro` (GitHub Pages serves the generated `404.html`)
+
+Redirects that stay in the build:
+
+- `/de/privacy/` → `/de/datenschutz/`
+- `/de/imprint/` → `/de/impressum/`
+- `/de/privacy-app/` and `/en/privacy-app/` → the privacy page `#app`
+- `/de/privacy-website/` and `/en/privacy-website/` → the privacy page `#website`
+
+`public/robots.txt` points at the generated [sitemap](https://offlinehandwerk.de/sitemap.xml). The sitemap lists each locale's home, legal pages, and manual, including `/de/agb/` and not an English terms URL.
+
+## Tech stack
+
+Astro 7 (`astro` in `package.json`) builds static HTML and CSS with its built-in i18n routing. `astro-icon` supplies the icons. `public/theme.js` is the only page script: it toggles the light/dark theme and stores that choice in `localStorage`. There are no cookies, analytics, external fonts, or CDN assets.
+
+Node.js 24. `package.json` requires `>=24`, and `.github/workflows/pages.yml` installs Node 24. There is no `.nvmrc`.
 
 ## Run locally
 
-Requires Node.js 24 or newer.
-
 ```sh
 npm ci
-npm run check
+npm run build
 npm run preview
 ```
 
-Open `http://127.0.0.1:4311/de/`. `PORT` changes the preview port.
+`npm run check` is the full gate: Prettier, `astro check`, the production build, and `node --test tests/*.test.mjs`.
+
+Open `http://127.0.0.1:4311/de/`. `PORT` changes the preview port. The preview server listens on `127.0.0.1` only and serves the `dist/` build.
+
+## Development
+
+Work on a branch and open a pull request into `main`. The owner reviews and merges; nothing merges automatically. The Pages workflow runs `npm run check` on pull requests and deploys only `main`.
+
+Every content change updates [CHANGELOG.md](CHANGELOG.md) in the same pull request. Date headings, the `Unreleased` section, and the rule that a pull request without its changelog entry must not be merged are in [AGENTS.md](AGENTS.md). New pages, changed URLs, and new features update this README in the same change. New conventions are added to `AGENTS.md`.
 
 ## Structure
 
-- `src/i18n/`: typed UI dictionaries, one file per language.
-- `src/content/legal/`: Impressum and Datenschutz as Markdown content collections. German is authoritative.
-- `src/content/product.json`: pinned app tokens, entitlements and Free limits.
-- `src/pages/`: Astro routes. `/de/` and `/en/` stay as the locale prefixes. German legal pages are `/de/datenschutz/`, `/de/impressum/` and `/de/agb/`; English legal pages are `/en/privacy/` and `/en/imprint/`. There is no English terms page. Slugs live in `src/config.mjs`. `index.astro` repeats the German home page at the project root. `/de/privacy/`, `/de/imprint/`, and the old `privacy-app` and `privacy-website` routes redirect to the current pages, keeping `#app` and `#website`.
-- `src/styles.css`: token-based responsive styles. The build prepends the pinned dark-theme variables.
+- `src/i18n/`: typed UI dictionaries, one file per language. German legal text remains authoritative.
+- `src/content/legal/`: Impressum, Datenschutz, and German terms (`de/terms.md`) as Markdown content collections. German is authoritative. There is no English terms page.
+- `src/content/product.json`: pinned app tokens, entitlements, and Free limits.
+- `src/pages/`: Astro routes. `/de/` and `/en/` stay as the locale prefixes. German legal pages are `/de/datenschutz/`, `/de/impressum/`, and `/de/agb/`; English legal pages are `/en/privacy/` and `/en/imprint/`. There is no English terms page. Slugs live in `src/config.mjs`. `index.astro` repeats the German home page at the project root. `/de/privacy/`, `/de/imprint/`, and the old `privacy-app` and `privacy-website` routes redirect to the current pages, keeping `#app` and `#website`.
+- `src/styles.css`: token-based responsive styles. The build prepends the pinned theme variables.
 - `scripts/serve.mjs`: loopback-only production preview.
-- `tests/site.test.mjs`: localization, route, legal scope, resource and feature checks.
+- `tests/`: localization, route, legal, HTML, preview, and workflow checks.
+- `public/CNAME`: `offlinehandwerk.de`. Astro `site` is `https://offlinehandwerk.de` and `base` is `/`.
 
-## Deployment and approval
+## Deployment
 
-Settings → Pages should select **GitHub Actions** for this generated-site workflow. The workflow builds/tests PRs and deploys **only main**; the website links are listed above.
+Settings → Pages should select **GitHub Actions**. The workflow builds and tests pull requests and deploys **only main**.
 
-Changes are delivered through pull requests for owner review and merge; no automatic merge is enabled. Configure github-pages environment approval if legal signoff must gate deployment after merge.
-
-The imprint and privacy pages are the public notices. See [legal review](docs/legal-review.md) for checks that are still open. Monthly/yearly prices and store destinations are unavailable placeholders: no invented prices, savings or QR destinations. Do not describe this website build as a store-listing release.
+Plan names and prices come from the language dictionaries and `src/content/product.json`. Do not invent prices, savings, or store URLs. Store buttons stay off while `storesEnabled` is `false`. Open legal checks are in [legal review](docs/legal-review.md).
 
 ## Update app facts
 
@@ -55,12 +81,14 @@ node scripts/sync-app.mjs <app-checkout> origin/main
 npm run check
 ```
 
-Review copy, limits and test expectations with every update. The sync reads declarative data and icon artwork, records the exact app commit and never contacts a store SDK/API.
+The sync reads declarative data and icon artwork, records the exact app commit, and never contacts a store SDK or API. Product images in `public/assets/` are shipped artwork of the German-language web application. See [asset sources](docs/asset-sources.md). Review screenshots stay in pull request attachments, outside Git history.
 
-## Languages and evidence
+Browser checks use Mullvad Browser, including accessibility tooling in an isolated profile. Do not substitute Chromium for a Lighthouse score.
 
-Add a complete typed dictionary and matching legal Markdown, extend `languages` and `slugs` in `src/config.mjs` (Astro reads that language list as its i18n locales), and update schema/count tests. Astro creates the locale routes; the layout emits reciprocal hreflang. Switching languages preserves legal-page context without storing a preference. German legal text remains authoritative.
+## License
 
-Product images in `public/assets/` are intentional shipped artwork of the real German-language web application, not native Android/iOS captures. See [asset sources](docs/asset-sources.md). Review screenshots belong in PR attachments, outside Git history.
+PolyForm Noncommercial 1.0.0 (see [LICENSE](LICENSE)).
 
-Use Mullvad Browser for browser checks, including accessibility tooling in an isolated profile. Never substitute Chromium for a Lighthouse score. Keep unexecuted Lighthouse, legal-review and published-URL gates explicit.
+## Contact
+
+Public contact details are on the [Impressum](https://offlinehandwerk.de/de/impressum/).
