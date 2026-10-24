@@ -1,3 +1,5 @@
+Copyright (c) 2026 Jan Siems. All rights reserved except as granted by the PolyForm Noncommercial License 1.0.0 (see LICENSE).
+
 # OfflineHandwerk Website (`offlinehandwerk.github.io`)
 
 Static DE/EN product website with one privacy page, an imprint page, and German terms at `/de/agb/`. Older app and website privacy URLs redirect to the matching section. Astro builds plain HTML and CSS with its built-in i18n routing: no runtime JavaScript, cookies, browser storage, analytics, external fonts or CDN assets.

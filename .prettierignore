@@ -5,3 +5,5 @@ node_modules/
 src/content/legal/
 # Renovate rewrites this file in its own JSON style.
 renovate.json
+# Official PolyForm text must stay byte-for-byte unmodified.
+LICENSE
