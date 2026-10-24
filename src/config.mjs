@@ -10,12 +10,21 @@ export const languages = ['de', 'en'];
 // Both locales stay prefixed: /de/ and /en/. Slugs differ by language.
 export const prefixDefaultLocale = true;
 export const legalPages = ['privacy', 'imprint'];
+// German store terms. No English page: do not invent a translation.
+export const deOnlyLegalPages = ['terms'];
 export const guidePages = ['manual'];
 export const slugs = {
-  de: { privacy: 'datenschutz', imprint: 'impressum', manual: 'anleitung' },
+  de: { privacy: 'datenschutz', imprint: 'impressum', terms: 'agb', manual: 'anleitung' },
   en: { privacy: 'privacy', imprint: 'imprint', manual: 'manual' },
 };
 export const slugFor = (lang, page) => slugs[lang][page];
+export const hasPage = (lang, page) => page === '' || Object.hasOwn(slugs[lang], page);
+export const routablePages = (lang) => [
+  '',
+  ...legalPages,
+  ...(lang === 'de' ? deOnlyLegalPages : []),
+  ...guidePages,
+];
 export const pathFor = (lang, page = '') =>
   `${site.base}${lang}/${page ? `${slugFor(lang, page)}/` : ''}`;
 export const urlFor = (lang, page = '') => `${site.origin}${pathFor(lang, page)}`;

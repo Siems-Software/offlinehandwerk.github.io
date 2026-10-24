@@ -7,6 +7,10 @@ Versions are merge dates (`YYYY-MM-DD`), not release numbers. The workflow is in
 
 ## [Unreleased]
 
+## [2026-10-24]
+
 ### Added
 
-- Introduced this changelog and documentation-maintenance rules in `AGENTS.md`, and rewrote `README.md` to match the current site (Crome696 via agent).
+- German terms page at `/de/agb/`. There is no English terms page (PR #45, Crome696 via agent).
+- PolyForm Noncommercial License 1.0.0 in `LICENSE` (PR #43, Crome696 via agent).
+- Documentation-maintenance rules in `AGENTS.md`, this changelog, and a current `README.md` (Crome696 via agent).

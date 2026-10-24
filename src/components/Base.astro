@@ -2,7 +2,7 @@
 import { Icon } from 'astro-icon/components';
 import '../styles.css';
 import { getAbsoluteLocaleUrl, getRelativeLocaleUrl } from 'astro:i18n';
-import { languages, site, slugFor } from '../config.mjs';
+import { hasPage, languages, site, slugFor } from '../config.mjs';
 import { hashRedirect } from '../lib/html.mjs';
 import { isLocale, otherLocale, useTranslations, type Locale } from '../i18n';
 
@@ -40,10 +40,11 @@ const hashSuffix = redirectHash ? `#${redirectHash}` : '';
 const canonical = absoluteLocalePath(locale, pageKey);
 const redirectTarget =
   variant === 'redirect' ? `${localePath(locale, redirectPage ?? '')}${hashSuffix}` : '';
+const languageTarget = !route || hasPage(other, route) ? route : '';
 const languageHref =
   variant === 'redirect'
     ? `${localePath(other, redirectPage ?? '')}${hashSuffix}`
-    : localePath(other, route);
+    : localePath(other, languageTarget);
 const localeCodes = languages.filter(isLocale);
 const preserved = preserveIncomingHash ? hashRedirect(redirectTarget) : null;
 const csp = `default-src 'none'; ${preserved ? preserved.csp : "script-src 'self';"} style-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'`;
@@ -73,9 +74,11 @@ const csp = `default-src 'none'; ${preserved ? preserved.csp : "script-src 'self
     <title>{title}</title>
     <link rel="canonical" href={canonical} />
     {variant === 'page' &&
-      localeCodes.map((code) => (
-        <link rel="alternate" hreflang={code} href={absoluteLocalePath(code, route)} />
-      ))}
+      localeCodes
+        .filter((code) => !route || hasPage(code, route))
+        .map((code) => (
+          <link rel="alternate" hreflang={code} href={absoluteLocalePath(code, route)} />
+        ))}
     {variant === 'page' && (
       <link rel="alternate" hreflang="x-default" href={absoluteLocalePath('de', route)} />
     )}
@@ -145,6 +148,7 @@ const csp = `default-src 'none'; ${preserved ? preserved.csp : "script-src 'self
         <nav aria-label={t.footerLegal}>
           <a href={localePath(locale, 'privacy')}>{t.privacy}</a>
           <a href={localePath(locale, 'imprint')}>{t.imprint}</a>
+          {locale === 'de' && <a href={localePath(locale, 'terms')}>AGB</a>}
         </nav>
       </div>
     </footer>

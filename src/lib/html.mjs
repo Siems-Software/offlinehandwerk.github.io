@@ -9,10 +9,16 @@ export const escapeHtml = (value) =>
 
 const contactEmail = 'info@offlinehandwerk.de';
 const mailtoLink = `<a href="mailto:${contactEmail}">${contactEmail}</a>`;
-const legalLink = /^\[([^\]]+)\]\((tel:\+\d+|mailto:[^)\s]+|#[A-Za-z0-9-]+|https:\/\/[^)\s]+)\)$/;
+const sitePath = String.raw`\/(?:de|en)\/(?:[a-z0-9-]+\/)?(?:#[A-Za-z0-9-]+)?`;
+const legalTarget = `tel:\\+\\d+|mailto:[^)\\s]+|#[A-Za-z0-9-]+|https:\\/\\/[^)\\s]+|${sitePath}`;
+const legalLink = new RegExp(`^\\[([^\\]]+)\\]\\((${legalTarget})\\)$`);
 const allowedHttpsHosts = new Set(['www.revenuecat.com', 'policies.google.com', 'www.apple.com']);
 
 const renderLegalLink = (label, target) => {
+  if (target.startsWith('/')) {
+    if (!new RegExp(`^${sitePath}$`).test(target)) return null;
+    return `<a href="${escapeHtml(target)}">${escapeHtml(label)}</a>`;
+  }
   if (target.startsWith('https://')) {
     let url;
     try {
@@ -33,11 +39,12 @@ const renderLegalLink = (label, target) => {
 };
 
 // A paragraph may contain [label](tel:+digits), [label](mailto:address),
-// [label](#anchor) or an allowlisted [label](https://…) token.
-// A bare contact address in the remaining text becomes the same mailto link.
+// [label](#anchor), an allowlisted [label](https://…) token, or a same-site
+// [label](/de/…) or [label](/en/…) path. A bare contact address in the
+// remaining text becomes the same mailto link.
 export const renderLegalText = (text) =>
   String(text)
-    .split(/(\[[^\]]+\]\((?:tel:\+\d+|mailto:[^)\s]+|#[A-Za-z0-9-]+|https:\/\/[^)\s]+)\))/g)
+    .split(new RegExp(`(\\[[^\\]]+\\]\\((?:${legalTarget})\\))`, 'g'))
     .map((part) => {
       const link = legalLink.exec(part);
       if (link) {

@@ -1,3 +1,5 @@
+Copyright (c) 2026 Jan Siems. All rights reserved except as granted by the PolyForm Noncommercial License 1.0.0 (see LICENSE).
+
 # OfflineHandwerk Website
 
 German-language product website for tradespeople (Handwerker), with an English translation.
@@ -14,6 +16,7 @@ German is the default locale. The project root repeats the German home page. `/d
 - Privacy: [https://offlinehandwerk.de/en/privacy/](https://offlinehandwerk.de/en/privacy/)
 - Impressum: [https://offlinehandwerk.de/de/impressum/](https://offlinehandwerk.de/de/impressum/)
 - Imprint: [https://offlinehandwerk.de/en/imprint/](https://offlinehandwerk.de/en/imprint/)
+- AGB: [https://offlinehandwerk.de/de/agb/](https://offlinehandwerk.de/de/agb/). There is no English terms page. The German footer links to it; the language switch on this page goes to the English home.
 - Anleitung: [https://offlinehandwerk.de/de/anleitung/](https://offlinehandwerk.de/de/anleitung/)
 - Manual: [https://offlinehandwerk.de/en/manual/](https://offlinehandwerk.de/en/manual/)
 - Not found: `src/pages/404.astro` (GitHub Pages serves the generated `404.html`)
@@ -25,9 +28,7 @@ Redirects that stay in the build:
 - `/de/privacy-app/` and `/en/privacy-app/` → the privacy page `#app`
 - `/de/privacy-website/` and `/en/privacy-website/` → the privacy page `#website`
 
-German terms: [https://offlinehandwerk.de/de/agb/](https://offlinehandwerk.de/de/agb/) — coming with the AGB PR.
-
-`public/robots.txt` points at the generated [sitemap](https://offlinehandwerk.de/sitemap.xml). The sitemap lists the locale homes, legal pages, and manuals above.
+`public/robots.txt` points at the generated [sitemap](https://offlinehandwerk.de/sitemap.xml). The sitemap lists each locale's home, legal pages, and manual, including `/de/agb/` and not an English terms URL.
 
 ## Tech stack
 
@@ -56,9 +57,9 @@ Every content change updates [CHANGELOG.md](CHANGELOG.md) in the same pull reque
 ## Structure
 
 - `src/i18n/`: typed UI dictionaries, one file per language. German legal text remains authoritative.
-- `src/content/legal/`: Impressum and Datenschutz as Markdown content collections.
+- `src/content/legal/`: Impressum, Datenschutz, and German terms (`de/terms.md`) as Markdown content collections. German is authoritative. There is no English terms page.
 - `src/content/product.json`: pinned app tokens, entitlements, and Free limits.
-- `src/pages/`: Astro routes.
+- `src/pages/`: Astro routes. `/de/` and `/en/` stay as the locale prefixes. German legal pages are `/de/datenschutz/`, `/de/impressum/`, and `/de/agb/`; English legal pages are `/en/privacy/` and `/en/imprint/`. There is no English terms page. Slugs live in `src/config.mjs`. `index.astro` repeats the German home page at the project root. `/de/privacy/`, `/de/imprint/`, and the old `privacy-app` and `privacy-website` routes redirect to the current pages, keeping `#app` and `#website`.
 - `src/styles.css`: token-based responsive styles. The build prepends the pinned theme variables.
 - `scripts/serve.mjs`: loopback-only production preview.
 - `tests/`: localization, route, legal, HTML, preview, and workflow checks.
@@ -86,7 +87,7 @@ Browser checks use Mullvad Browser, including accessibility tooling in an isolat
 
 ## License
 
-License: will follow (PolyForm Noncommercial 1.0.0, see open PR)
+PolyForm Noncommercial 1.0.0 (see [LICENSE](LICENSE)).
 
 ## Contact
 
