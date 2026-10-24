@@ -27,4 +27,4 @@ Versions are merge dates (`YYYY-MM-DD`), not release numbers. The workflow is in
 
 ### Changed
 
-- PolyForm Noncommercial copyright holder is Siems Software (https://offlinehandwerk.de) in `LICENSE` and `README.md` (Crome696 via agent).
+- PolyForm Noncommercial copyright holder is Siems Software (https://offlinehandwerk.de) in `LICENSE` and `README.md` (PR #47, Crome696 via agent).
