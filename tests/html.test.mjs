@@ -43,6 +43,14 @@ test('legal links allow listed privacy policies and in-page anchors only', () =>
   );
   assert.equal(renderLegalText('[Abschnitt](#loeschung)'), '<a href="#loeschung">Abschnitt</a>');
   assert.equal(
+    renderLegalText('[Anbieterkennzeichnung](/de/impressum/)'),
+    '<a href="/de/impressum/">Anbieterkennzeichnung</a>',
+  );
+  assert.equal(
+    renderLegalText('[Datenschutzerklärung](/de/datenschutz/#loeschung)'),
+    '<a href="/de/datenschutz/#loeschung">Datenschutzerklärung</a>',
+  );
+  assert.equal(
     renderLegalText('[<script>](https://www.revenuecat.com/privacy-policy)'),
     '<a href="https://www.revenuecat.com/privacy-policy">&lt;script&gt;</a>',
   );
@@ -51,6 +59,9 @@ test('legal links allow listed privacy policies and in-page anchors only', () =>
     '[x](javascript:alert(1))',
     '[x](https://user:pass@www.revenuecat.com/privacy-policy)',
     '[x](https://www.revenuecat.com.evil.example/privacy)',
+    '[x](/de/impressum)',
+    '[x](/en/../privacy/)',
+    '[x](//evil.example/)',
   ]) {
     const html = renderLegalText(sample);
     assert.equal(html.includes('<a '), false, sample);

@@ -10,7 +10,8 @@ const locale = Astro.currentLocale;
 if (!isLocale(locale) || locale !== 'de') throw new Error(`Expected de, got ${locale}`);
 const { kind, redirect } = Astro.props;
 const legalKind = isLegalPage(kind) ? kind : null;
-const legacyPage = isLegalPage(redirect?.page) ? redirect.page : null;
+const legacyPage =
+  redirect?.page === 'privacy' || redirect?.page === 'imprint' ? redirect.page : null;
 const hash = typeof redirect?.hash === 'string' ? redirect.hash : undefined;
 if (!legalKind && !legacyPage) throw new Error(`Unexpected page ${Astro.params.page}`);
 ---

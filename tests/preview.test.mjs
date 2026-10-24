@@ -5,8 +5,7 @@ import { once } from 'node:events';
 import {
   site,
   languages,
-  legalPages,
-  guidePages,
+  routablePages,
   slugFor,
   redirectsFor,
   redirectTo,
@@ -46,7 +45,7 @@ test.after(async () => {
 
 test('real preview serves all localized pages with 200, not Windows path-prefix 403', async () => {
   for (const lang of languages) {
-    for (const page of ['', ...legalPages, ...guidePages]) {
+    for (const page of routablePages(lang)) {
       const route = page ? `${slugFor(lang, page)}/` : '';
       const response = await fetch(`${base}${lang}/${route}`);
       assert.equal(response.status, 200);

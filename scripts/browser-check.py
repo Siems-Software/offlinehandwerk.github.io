@@ -52,7 +52,7 @@ report = {
     "captures": [],
 }
 routes = {
-    "de": ["", "datenschutz/", "impressum/"],
+    "de": ["", "datenschutz/", "impressum/", "agb/"],
     "en": ["", "privacy/", "imprint/"],
 }
 

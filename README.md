@@ -1,6 +1,6 @@
 # OfflineHandwerk Website (`offlinehandwerk.github.io`)
 
-Static DE/EN product website with one privacy page and an imprint page. Older app and website privacy URLs redirect to the matching section. Astro builds plain HTML and CSS with its built-in i18n routing: no runtime JavaScript, cookies, browser storage, analytics, external fonts or CDN assets.
+Static DE/EN product website with one privacy page, an imprint page, and German terms at `/de/agb/`. Older app and website privacy URLs redirect to the matching section. Astro builds plain HTML and CSS with its built-in i18n routing: no runtime JavaScript, cookies, browser storage, analytics, external fonts or CDN assets.
 
 ## Website / target URLs
 
@@ -30,7 +30,7 @@ Open `http://127.0.0.1:4311/de/`. `PORT` changes the preview port.
 - `src/i18n/`: typed UI dictionaries, one file per language.
 - `src/content/legal/`: Impressum and Datenschutz as Markdown content collections. German is authoritative.
 - `src/content/product.json`: pinned app tokens, entitlements and Free limits.
-- `src/pages/`: Astro routes. `/de/` and `/en/` stay as the locale prefixes. German legal pages are `/de/datenschutz/` and `/de/impressum/`; English legal pages are `/en/privacy/` and `/en/imprint/`. Slugs live in `src/config.mjs`. `index.astro` repeats the German home page at the project root. `/de/privacy/`, `/de/imprint/`, and the old `privacy-app` and `privacy-website` routes redirect to the current pages, keeping `#app` and `#website`.
+- `src/pages/`: Astro routes. `/de/` and `/en/` stay as the locale prefixes. German legal pages are `/de/datenschutz/`, `/de/impressum/` and `/de/agb/`; English legal pages are `/en/privacy/` and `/en/imprint/`. There is no English terms page. Slugs live in `src/config.mjs`. `index.astro` repeats the German home page at the project root. `/de/privacy/`, `/de/imprint/`, and the old `privacy-app` and `privacy-website` routes redirect to the current pages, keeping `#app` and `#website`.
 - `src/styles.css`: token-based responsive styles. The build prepends the pinned dark-theme variables.
 - `scripts/serve.mjs`: loopback-only production preview.
 - `tests/site.test.mjs`: localization, route, legal scope, resource and feature checks.
