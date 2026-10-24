@@ -9,22 +9,18 @@ export const storesEnabled = false;
 export const languages = ['de', 'en'];
 // Both locales stay prefixed: /de/ and /en/. Slugs differ by language.
 export const prefixDefaultLocale = true;
-export const legalPages = ['privacy', 'imprint'];
-// German store terms. No English page: do not invent a translation.
-export const deOnlyLegalPages = ['terms'];
+export const legalPages = ['privacy', 'imprint', 'terms'];
 export const guidePages = ['manual'];
 export const slugs = {
   de: { privacy: 'datenschutz', imprint: 'impressum', terms: 'agb', manual: 'anleitung' },
-  en: { privacy: 'privacy', imprint: 'imprint', manual: 'manual' },
+  en: { privacy: 'privacy', imprint: 'imprint', terms: 'terms', manual: 'manual' },
 };
 export const slugFor = (lang, page) => slugs[lang][page];
 export const hasPage = (lang, page) => page === '' || Object.hasOwn(slugs[lang], page);
-export const routablePages = (lang) => [
-  '',
-  ...legalPages,
-  ...(lang === 'de' ? deOnlyLegalPages : []),
-  ...guidePages,
-];
+export const routablePages = (lang) => {
+  if (!Object.hasOwn(slugs, lang)) throw new Error(`Unknown language ${lang}`);
+  return ['', ...legalPages, ...guidePages];
+};
 export const pathFor = (lang, page = '') =>
   `${site.base}${lang}/${page ? `${slugFor(lang, page)}/` : ''}`;
 export const urlFor = (lang, page = '') => `${site.origin}${pathFor(lang, page)}`;

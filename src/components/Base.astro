@@ -148,7 +148,7 @@ const csp = `default-src 'none'; ${preserved ? preserved.csp : "script-src 'self
         <nav aria-label={t.footerLegal}>
           <a href={localePath(locale, 'privacy')}>{t.privacy}</a>
           <a href={localePath(locale, 'imprint')}>{t.imprint}</a>
-          {locale === 'de' && <a href={localePath(locale, 'terms')}>AGB</a>}
+          <a href={localePath(locale, 'terms')}>{t.terms}</a>
         </nav>
       </div>
     </footer>

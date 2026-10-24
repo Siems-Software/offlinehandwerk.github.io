@@ -28,6 +28,7 @@ const sections = parseLegalBody(entry.body) as LegalSection[];
   <main id="main" class="container legal-page">
     <h1>{entry.data.title}</h1>
     {kind === 'imprint' && <h2 class="legal-statute">{entry.data.intro}</h2>}
+    {entry.data.note && <p class="legal-note">{entry.data.note}</p>}
     {sections.map((section, index) => {
       const id = section.id ?? `legal-${index}`;
       return (

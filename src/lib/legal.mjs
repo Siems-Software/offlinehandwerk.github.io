@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { languages } from '../config.mjs';
+import { languages, legalPages } from '../config.mjs';
 
 const splitHeadingId = (value) => {
   const idMatch = /^(.*) \{#([A-Za-z0-9-]+)\}$/.exec(value.trim());
@@ -49,9 +49,12 @@ export const parseLegalDocument = (source) => {
   }
   if (data.intro != null && (typeof data.intro !== 'string' || data.intro.trim() === ''))
     throw new Error('Missing legal intro');
+  if (data.note != null && (typeof data.note !== 'string' || data.note.trim() === ''))
+    throw new Error('Missing legal note');
   return {
     title: data.title,
     ...(typeof data.intro === 'string' ? { intro: data.intro } : {}),
+    ...(typeof data.note === 'string' ? { note: data.note } : {}),
     updated: data.updated,
     sections: parseLegalBody(match[2]),
   };
@@ -61,7 +64,7 @@ export const loadLegal = async () => {
   const documents = {};
   for (const lang of languages) {
     documents[lang] = {};
-    for (const kind of ['privacy', 'imprint', ...(lang === 'de' ? ['terms'] : [])]) {
+    for (const kind of legalPages) {
       const source = await readFile(
         resolve(process.cwd(), 'src/content/legal', lang, `${kind}.md`),
         'utf8',

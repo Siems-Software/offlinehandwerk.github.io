@@ -7,6 +7,16 @@ Versions are merge dates (`YYYY-MM-DD`), not release numbers. The workflow is in
 
 ## [Unreleased]
 
+### Added
+
+- English terms at `/en/terms/`, with the language switch between `/de/agb/` and `/en/terms/` (PR #46, Refs Siems-Software/OfflineHandwerk#153, Crome696 via agent).
+- Test that `/de/impressum/` and `/en/imprint/` contain no VAT ID (PR #46, Refs Siems-Software/OfflineHandwerk#152, Crome696 via agent).
+
+### Changed
+
+- Privacy policy in German and English: narrow RevenueCat analytics purpose for the count of paying customers (entitlement `offlinehandwerk_premium`) and app usage duration (PR #46, Refs Siems-Software/OfflineHandwerk#147, Crome696 via agent).
+- Privacy policy in German and English: retention by category for RevenueCat data, Google payout reports, and store data, and the privacy pages' last-updated date (PR #46, Refs Siems-Software/OfflineHandwerk#154, Crome696 via agent).
+
 ## [2026-10-24]
 
 ### Added
