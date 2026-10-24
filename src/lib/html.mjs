@@ -9,15 +9,41 @@ export const escapeHtml = (value) =>
 
 const contactEmail = 'info@offlinehandwerk.de';
 const mailtoLink = `<a href="mailto:${contactEmail}">${contactEmail}</a>`;
+const legalLink = /^\[([^\]]+)\]\((tel:\+\d+|mailto:[^)\s]+|#[A-Za-z0-9-]+|https:\/\/[^)\s]+)\)$/;
+const allowedHttpsHosts = new Set(['www.revenuecat.com', 'policies.google.com', 'www.apple.com']);
 
-// A paragraph may contain [label](tel:+digits) or [label](mailto:address) tokens.
+const renderLegalLink = (label, target) => {
+  if (target.startsWith('https://')) {
+    let url;
+    try {
+      url = new URL(target);
+    } catch {
+      return null;
+    }
+    if (
+      url.protocol !== 'https:' ||
+      url.username !== '' ||
+      url.password !== '' ||
+      !allowedHttpsHosts.has(url.hostname)
+    )
+      return null;
+    return `<a href="${escapeHtml(url.href)}">${escapeHtml(label)}</a>`;
+  }
+  return `<a href="${escapeHtml(target)}">${escapeHtml(label)}</a>`;
+};
+
+// A paragraph may contain [label](tel:+digits), [label](mailto:address),
+// [label](#anchor) or an allowlisted [label](https://…) token.
 // A bare contact address in the remaining text becomes the same mailto link.
 export const renderLegalText = (text) =>
   String(text)
-    .split(/(\[[^\]]+\]\((?:tel:\+\d+|mailto:[^)\s]+)\))/g)
+    .split(/(\[[^\]]+\]\((?:tel:\+\d+|mailto:[^)\s]+|#[A-Za-z0-9-]+|https:\/\/[^)\s]+)\))/g)
     .map((part) => {
-      const link = /^\[([^\]]+)\]\((tel:\+\d+|mailto:[^)\s]+)\)$/.exec(part);
-      if (link) return `<a href="${escapeHtml(link[2])}">${escapeHtml(link[1])}</a>`;
+      const link = legalLink.exec(part);
+      if (link) {
+        const rendered = renderLegalLink(link[1], link[2]);
+        if (rendered) return rendered;
+      }
       return escapeHtml(part).replace(/\n/g, '<br>').replaceAll(contactEmail, mailtoLink);
     })
     .join('');

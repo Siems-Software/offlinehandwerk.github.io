@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { locale, kind } = Astro.props;
-type LegalBlock = { type: 'h3' | 'p'; text: string };
+type LegalBlock = { type: 'h3'; text: string; id?: string } | { type: 'p'; text: string };
 type LegalSection = { id?: string; title: string; blocks: LegalBlock[] };
 const entry = await getEntry('legal', `${locale}/${kind}`);
 if (!entry?.body) throw new Error(`Missing legal markdown ${locale}/${kind}`);
@@ -35,7 +35,11 @@ const sections = parseLegalBody(entry.body) as LegalSection[];
           <h2 id={id}>{section.title}</h2>
           {section.blocks.map((block) =>
             block.type === 'h3' ? (
-              <h3>{block.text}</h3>
+              block.id ? (
+                <h3 id={block.id}>{block.text}</h3>
+              ) : (
+                <h3>{block.text}</h3>
+              )
             ) : (
               <p set:html={renderLegalText(block.text)} />
             ),

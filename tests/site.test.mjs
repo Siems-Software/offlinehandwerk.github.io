@@ -473,8 +473,69 @@ test('every visible contact email is a mailto link', () => {
   for (const lang of languages) {
     for (const page of ['privacy', 'imprint']) {
       const $ = pages.find((item) => item.lang === lang && item.page === page).$;
-      assert.equal($(`a[href="mailto:${email}"]`).length, 1);
+      assert.equal($(`a[href="mailto:${email}"]`).length, page === 'privacy' ? 2 : 1);
     }
+  }
+});
+test('privacy pages link a stable deletion section and describe device backup', () => {
+  const copy = {
+    de: {
+      id: 'loeschung',
+      heading: 'Löschung deiner Daten',
+      url: 'https://offlinehandwerk.de/de/datenschutz/#loeschung',
+      android: 'Auf Android nimmt sie an der Systemsicherung (Auto Backup) nicht teil.',
+      backup:
+        'Der Export erzeugt eine unverschlüsselte JSON-Datei mit Kunden-, Kalkulations- und Betriebsdaten.',
+      account: 'Ein Nutzerkonto gibt es nicht.',
+      premium: 'Mit Premium kannst du die lokalen Daten in der App sichern und wiederherstellen.',
+      receipts: 'Kaufbelege sind nicht enthalten.',
+      cancel: 'kündigt das Abonnement nicht',
+    },
+    en: {
+      id: 'deletion',
+      heading: 'Deleting your data',
+      url: 'https://offlinehandwerk.de/en/privacy/#deletion',
+      android: 'On Android it does not take part in system backup (Auto Backup).',
+      backup:
+        'The export creates an unencrypted JSON file containing customer, calculation and business data.',
+      account: 'There is no user account.',
+      premium: 'With Premium you can back up and restore the local data in the app.',
+      receipts: 'Purchase receipts are not included.',
+      cancel: 'does not cancel the subscription',
+    },
+  };
+  for (const lang of languages) {
+    const page = pages.find((item) => item.lang === lang && item.page === 'privacy');
+    const expected = copy[lang];
+    const app = page.$('#app').parent();
+    const heading = app.find(`h3#${expected.id}`);
+    assert.equal(heading.length, 1);
+    assert.equal(heading.text(), expected.heading);
+    assert.equal(page.$(`[id="${expected.id}"]`).length, 1);
+    assert.equal(`${urlFor(lang, 'privacy')}#${expected.id}`, expected.url);
+    const appText = app.text();
+    assert.equal(page.$('#website').parent().text().includes(expected.android), false);
+    assert.ok(appText.includes(expected.android));
+    assert.ok(appText.includes(expected.backup));
+    assert.ok(appText.includes(expected.receipts));
+    assert.ok(appText.includes(expected.account));
+    assert.ok(appText.includes(expected.premium));
+    assert.ok(appText.includes(expected.cancel));
+    assert.equal(app.find(`a[href="#${expected.id}"]`).length, 1);
+    assert.equal(app.find('a[href="https://www.revenuecat.com/privacy-policy"]').length, 1);
+    assert.equal(app.find('a[href="https://policies.google.com/privacy"]').length, 1);
+    assert.equal(app.find('a[href="https://www.apple.com/legal/privacy/"]').length, 1);
+    const deletion = [];
+    let next = heading.next();
+    while (next.length && next[0].name !== 'h3') {
+      deletion.push(next.text());
+      next = next.next();
+    }
+    const deletionText = deletion.join('\n');
+    assert.ok(deletionText.includes(expected.account));
+    assert.ok(deletionText.includes(lang === 'de' ? 'Deinstallieren' : 'uninstalling'));
+    assert.ok(deletionText.includes('RevenueCat'));
+    assert.equal(page.$('#website').parent().find('a[href*="revenuecat.com"]').length, 0);
   }
 });
 test('imprint pages show the final provider notice in both languages', () => {

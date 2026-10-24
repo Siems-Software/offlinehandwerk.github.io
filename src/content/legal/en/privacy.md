@@ -37,7 +37,7 @@ If you contact us, we process the details you give us, that is your name, contac
 
 ### Local storage
 
-Everything you record in the app, for example calculations, customer, employee and business data and your company logo, is stored only locally on your device. We have no access to it and do not transfer it to our own servers. You yourself are responsible for the lawfulness of processing this data.
+Everything you record in the app, for example calculations, customer, employee and business data and your company logo, is stored only locally on your device. We have no access to it and do not transfer it to our own servers. The app does not create an automatic cloud backup of these contents. On Android it does not take part in system backup (Auto Backup). You yourself are responsible for the lawfulness of processing this data.
 
 The app contains no analytics or crash-reporting services and creates no usage profiles.
 
@@ -55,9 +55,21 @@ To manage and unlock purchased features we use RevenueCat, Inc. (USA). For that 
 
 If you share, print or email PDFs or backups, the app hands the file to the app or service you select. We do not receive this data.
 
+With Premium you can back up and restore the local data in the app. The export creates an unencrypted JSON file containing customer, calculation and business data. Purchase receipts are not included. You choose where to keep the file. We do not upload it.
+
 ### Retention
 
-Local data stays on your device until you delete it, reset the app or uninstall it.
+Local data stays on your device until you delete it in the app, delete the app data, reset the app or uninstall it. How purchase data at RevenueCat is deleted is described under [Deleting your data](#deletion).
+
+### Deleting your data {#deletion}
+
+There is no user account. You delete app contents on the device: in the app, by deleting the app data or resetting the app, or by uninstalling the app. We do not hold these contents and cannot delete them remotely. Files you have already exported or shared, such as PDFs and backups, stay with the recipient or at the location you chose.
+
+RevenueCat, Inc. (USA) processes purchase data for the Premium subscription. RevenueCat receives a pseudonymous identifier and purchase and transaction data, not the contents of the app. Google Play Billing or Apple handles the payment itself. To ask for deletion of the purchase data stored at RevenueCat, email [info@offlinehandwerk.de](mailto:info@offlinehandwerk.de). If the app shows an identifier in subscription management, include it.
+
+We then delete the related customer record in the RevenueCat dashboard or through the API. RevenueCat's public documentation says that this removes the purchase history RevenueCat stores for that customer. RevenueCat describes this as sufficient for a GDPR erasure request. When we instruct RevenueCat, RevenueCat states that it responds within a reasonable time. Personal data may still be kept afterwards where RevenueCat's own retention rule, or legal duties, disputes and contracts, require it. RevenueCat does not publish a specific period for this end-user purchase data. Details are in [RevenueCat's privacy policy](https://www.revenuecat.com/privacy-policy).
+
+Deleting the app or the record at RevenueCat does not cancel the subscription. Cancel it separately in Google Play or the Apple App Store. Purchase records that Google or Apple keep themselves follow their own rules: [Google's privacy policy](https://policies.google.com/privacy) and [Apple's privacy policy](https://www.apple.com/legal/privacy/).
 
 ### Provision of personal data
 
