@@ -107,6 +107,7 @@ export const en = {
   footerLegal: 'Legal',
   privacy: 'Privacy',
   imprint: 'Imprint',
+  terms: 'Terms',
   contact: 'Contact',
   footerBefore: 'Made with ❤️ in',
   footerAfter: '',

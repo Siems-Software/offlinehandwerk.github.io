@@ -118,6 +118,7 @@ export const de = {
   footerLegal: 'Rechtliches',
   privacy: 'Datenschutz',
   imprint: 'Impressum',
+  terms: 'AGB',
   contact: 'Kontakt',
   footerBefore: 'Mit ❤️ in',
   footerAfter: 'hergestellt',

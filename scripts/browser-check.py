@@ -53,7 +53,7 @@ report = {
 }
 routes = {
     "de": ["", "datenschutz/", "impressum/", "agb/"],
-    "en": ["", "privacy/", "imprint/"],
+    "en": ["", "privacy/", "imprint/", "terms/"],
 }
 
 

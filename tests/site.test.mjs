@@ -52,12 +52,16 @@ const flatten = (value, prefix = '') =>
 
 test('DE and EN have matching, non-empty translation and legal schemas', () => {
   assert.deepEqual(flatten(locales.de), flatten(locales.en));
-  assert.deepEqual(
-    flatten({ privacy: legal.de.privacy, imprint: legal.de.imprint }),
-    flatten(legal.en),
+  for (const kind of legalPages) {
+    assert.deepEqual(flatten(legal.de[kind].sections), flatten(legal.en[kind].sections));
+  }
+  assert.equal(legal.de.terms.note, undefined);
+  assert.equal(
+    legal.en.terms.note,
+    'This translation is provided for convenience. The German version is legally binding.',
   );
-  assert.equal(legal.en.terms, undefined);
   assert.equal(legal.de.terms.title, 'Allgemeine Geschäftsbedingungen');
+  assert.equal(legal.en.terms.title, 'General Terms and Conditions');
   for (const locale of [...Object.values(locales), ...Object.values(legal)]) {
     const check = (value) =>
       Object.values(value).forEach((entry) =>
@@ -427,8 +431,12 @@ test('privacy page states shared duties once and keeps website and app sections 
     const contact = page.$('#website').parent().next('section').text();
     const revenueCat =
       lang === 'de'
-        ? 'RevenueCat speichert die Kaufdaten, solange dies für die Bereitstellung der Käufe und die Erfüllung gesetzlicher Aufbewahrungspflichten erforderlich ist.'
-        : 'RevenueCat retains purchase data for as long as necessary to provide purchased features and comply with statutory retention obligations.';
+        ? 'werden für die Dauer des Vertrags mit RevenueCat gespeichert'
+        : 'is kept for the term of the contract with RevenueCat';
+    const genericRetention =
+      lang === 'de'
+        ? 'solange dies für die Bereitstellung der Käufe und die Erfüllung gesetzlicher Aufbewahrungspflichten erforderlich ist'
+        : 'for as long as necessary to provide purchased features and comply with statutory retention obligations';
     assert.ok(
       contact.includes(
         lang === 'de'
@@ -437,6 +445,7 @@ test('privacy page states shared duties once and keeps website and app sections 
       ),
     );
     assert.ok(app.includes(revenueCat));
+    assert.equal(app.includes(genericRetention), false);
     assert.ok(
       app.includes(
         lang === 'de'
@@ -533,7 +542,7 @@ test('privacy pages link a stable deletion section and describe device backup', 
     assert.ok(appText.includes(expected.account));
     assert.ok(appText.includes(expected.premium));
     assert.ok(appText.includes(expected.cancel));
-    assert.equal(app.find(`a[href="#${expected.id}"]`).length, 1);
+    assert.equal(app.find(`a[href="#${expected.id}"]`).length, 2);
     assert.equal(app.find('a[href="https://www.revenuecat.com/privacy-policy"]').length, 1);
     assert.equal(app.find('a[href="https://policies.google.com/privacy"]').length, 1);
     assert.equal(app.find('a[href="https://www.apple.com/legal/privacy/"]').length, 1);
@@ -618,14 +627,25 @@ test('imprint pages show the final provider notice in both languages', () => {
     );
   }
 });
-test('footer shows privacy and imprint, plus German terms, outside the main navigation', () => {
+test('imprint pages show no VAT ID', async () => {
+  const forbidden =
+    /USt-IdNr\.?|Umsatzsteuer-ID|Umsatzsteuer-Identifikationsnummer|VAT[- ]ID|\bDE\d{9}\b/i;
+  for (const lang of languages) {
+    const source = await readFile(resolve(root, 'src/content/legal', lang, 'imprint.md'), 'utf8');
+    const page = pages.find((item) => item.lang === lang && item.page === 'imprint');
+    assert.equal(page.$(`link[rel="canonical"]`).attr('href'), urlFor(lang, 'imprint'));
+    assert.doesNotMatch(source, forbidden);
+    assert.doesNotMatch(page.$('main').text(), forbidden);
+  }
+});
+test('footer shows privacy, imprint and terms outside the main navigation', () => {
   for (const { lang, page, $ } of pages) {
-    const expectedHrefs = [pathFor(lang, 'privacy'), pathFor(lang, 'imprint')];
-    const expectedLabels = [locales[lang].privacy, locales[lang].imprint];
-    if (lang === 'de') {
-      expectedHrefs.push(pathFor(lang, 'terms'));
-      expectedLabels.push('AGB');
-    }
+    const expectedHrefs = [
+      pathFor(lang, 'privacy'),
+      pathFor(lang, 'imprint'),
+      pathFor(lang, 'terms'),
+    ];
+    const expectedLabels = [locales[lang].privacy, locales[lang].imprint, locales[lang].terms];
     assert.deepEqual(
       $('footer nav a')
         .map((_, element) => $(element).attr('href'))
@@ -638,14 +658,14 @@ test('footer shows privacy and imprint, plus German terms, outside the main navi
         .get(),
       expectedLabels,
     );
-    for (const label of [locales[lang].privacy, locales[lang].imprint]) {
+    for (const label of [locales[lang].privacy, locales[lang].imprint, locales[lang].terms]) {
       const matches = $('a').filter((_, element) => $(element).text().trim() === label);
       assert.equal(matches.length, 1, label);
       assert.equal(matches.parents('footer').length, 1, label);
     }
     assert.equal(
       $(
-        'nav.main-nav a[href*="privacy"], nav.main-nav a[href*="imprint"], nav.main-nav a[href*="datenschutz"], nav.main-nav a[href*="impressum"], nav.main-nav a[href*="/agb/"]',
+        'nav.main-nav a[href*="privacy"], nav.main-nav a[href*="imprint"], nav.main-nav a[href*="datenschutz"], nav.main-nav a[href*="impressum"], nav.main-nav a[href*="/agb/"], nav.main-nav a[href*="/terms/"]',
       ).length,
       0,
     );
@@ -729,7 +749,6 @@ test('old privacy and imprint URLs redirect to the localized pages', async () =>
 test('every page links all legal routes and accessible main content', () => {
   for (const { lang, $ } of pages) {
     for (const page of legalPages) assert.ok($(`footer a[href="${pathFor(lang, page)}"]`).length);
-    assert.equal($(`footer a[href="${pathFor('de', 'terms')}"]`).length, lang === 'de' ? 1 : 0);
     assert.equal($('a.skip-link').attr('href'), '#main');
     assert.equal($('img:not([alt])').length, 0);
     assert.equal($('table th:not([scope])').length, 0);
@@ -788,7 +807,7 @@ test('sitemap has every localized canonical URL and not duplicate root/404 URLs'
   );
   assert.equal(xml.includes('/de/agb/'), true);
   assert.equal(xml.includes('/en/agb/'), false);
-  assert.equal(xml.includes('/en/terms/'), false);
+  assert.equal(xml.includes('/en/terms/'), true);
   assert.equal(xml.includes('/de/privacy/'), false);
   assert.equal(xml.includes('/de/imprint/'), false);
   assert.equal(xml.includes('/de/datenschutz/'), true);
@@ -802,18 +821,28 @@ test('sitemap has every localized canonical URL and not duplicate root/404 URLs'
   await stat(resolve(out, '404.html'));
   await stat(resolve(out, '.nojekyll'));
 });
-test('German terms page is the stable store URL and has no English twin', async () => {
+test('terms pages pair German and English and keep the German store URL', async () => {
   assert.equal(urlFor('de', 'terms'), 'https://offlinehandwerk.de/de/agb/');
-  const page = pages.find((item) => item.lang === 'de' && item.page === 'terms');
-  const text = page.$('main').text();
-  assert.equal(page.$('h1').text(), 'Allgemeine Geschäftsbedingungen');
-  assert.equal(page.$('main .small').text(), 'Stand: 24.10.2026');
-  assert.equal(page.$('html').attr('lang'), 'de');
-  assert.equal(page.$('link[rel="canonical"]').attr('href'), 'https://offlinehandwerk.de/de/agb/');
-  assert.equal(page.$('link[hreflang="en"]').length, 0);
-  assert.equal(page.$('a.language').attr('href'), '/en/');
+  assert.equal(urlFor('en', 'terms'), 'https://offlinehandwerk.de/en/terms/');
+  const german = pages.find((item) => item.lang === 'de' && item.page === 'terms');
+  const english = pages.find((item) => item.lang === 'en' && item.page === 'terms');
+  const text = german.$('main').text();
+  const englishText = english.$('main').text();
+  assert.equal(german.$('h1').text(), 'Allgemeine Geschäftsbedingungen');
+  assert.equal(german.$('main .small').text(), 'Stand: 24.10.2026');
+  assert.equal(german.$('html').attr('lang'), 'de');
+  assert.equal(german.$('p.legal-note').length, 0);
+  assert.equal(
+    german.$('link[rel="canonical"]').attr('href'),
+    'https://offlinehandwerk.de/de/agb/',
+  );
+  assert.equal(
+    german.$('link[hreflang="en"]').attr('href'),
+    'https://offlinehandwerk.de/en/terms/',
+  );
+  assert.equal(german.$('a.language').attr('href'), '/en/terms/');
   assert.ok(text.includes('Jan Siems, Hintergasse 28, 67308 Bubenheim, Deutschland'));
-  assert.equal(page.$('a[href="tel:+4917684328001"]').length >= 1, true);
+  assert.equal(german.$('a[href="tel:+4917684328001"]').length >= 1, true);
   assert.ok(text.includes('9,99 € pro Monat'));
   assert.ok(text.includes('109,99 € pro Jahr'));
   assert.ok(text.includes('offlinehandwerk_premium'));
@@ -835,13 +864,122 @@ test('German terms page is the stable store URL and has no English twin', async 
   assert.ok(text.includes('(*) Unzutreffendes streichen.'));
   assert.ok(text.includes('§ 356 Absatz 6 BGB'));
   assert.ok(text.includes('§ 356 Absatz 5 Nummer 2 BGB'));
-  assert.equal(page.$('main a[href="/de/impressum/"]').length, 2);
-  assert.equal(page.$('main a[href="/de/datenschutz/"]').length, 1);
-  assert.equal(page.$('main a[href="/de/#plans"]').length, 1);
+  assert.equal(german.$('main a[href="/de/impressum/"]').length, 2);
+  assert.equal(german.$('main a[href="/de/datenschutz/"]').length, 1);
+  assert.equal(german.$('main a[href="/de/#plans"]').length, 1);
   assert.equal(text.includes('USt-IdNr'), false);
   assert.equal(text.includes('Umsatzsteuer-Identifikationsnummer'), false);
   assert.equal(text.includes('ec.europa.eu'), false);
   assert.doesNotMatch(text, /Entwurf|rechtliche Freigabe|Draft/);
+  assert.equal(english.$('h1').text(), 'General Terms and Conditions');
+  assert.equal(english.$('html').attr('lang'), 'en');
+  assert.equal(english.$('main .small').text(), 'As of: 24 October 2026');
+  assert.equal(
+    english.$('p.legal-note').text(),
+    'This translation is provided for convenience. The German version is legally binding.',
+  );
+  assert.equal(
+    english.$('link[rel="canonical"]').attr('href'),
+    'https://offlinehandwerk.de/en/terms/',
+  );
+  assert.equal(english.$('link[hreflang="de"]').attr('href'), 'https://offlinehandwerk.de/de/agb/');
+  assert.equal(english.$('a.language').attr('href'), '/de/agb/');
+  assert.ok(englishText.includes('Jan Siems, Hintergasse 28, 67308 Bubenheim, Germany'));
+  assert.ok(englishText.includes('€9.99 per month'));
+  assert.ok(englishText.includes('€109.99 per year'));
+  assert.ok(englishText.includes('offlinehandwerk_premium'));
+  assert.ok(englishText.includes('No free trial period is granted.'));
+  assert.ok(englishText.includes('Uninstalling the app does not end the subscription.'));
+  assert.ok(
+    englishText.includes(
+      'You have the right to withdraw from this contract within fourteen days without giving any reason.',
+    ),
+  );
+  assert.ok(
+    englishText.includes(
+      'The withdrawal period is fourteen days from the day on which the contract is concluded.',
+    ),
+  );
+  assert.ok(englishText.includes('(*) Delete as appropriate.'));
+  assert.ok(englishText.includes('§ 356 Absatz 6 BGB'));
+  assert.ok(englishText.includes('§ 356 Absatz 5 Nummer 2 BGB'));
+  assert.equal(english.$('main a[href="/en/imprint/"]').length, 2);
+  assert.equal(english.$('main a[href="/en/privacy/"]').length, 1);
+  assert.equal(english.$('main a[href="/en/#plans"]').length, 1);
+  assert.equal(englishText.includes('USt-IdNr'), false);
+  assert.equal(englishText.includes('VAT ID'), false);
+  assert.equal(englishText.includes('ec.europa.eu'), false);
+  assert.doesNotMatch(englishText, /Entwurf|Draft|pending legal/);
   await assert.rejects(stat(resolve(out, 'en/agb/index.html')));
-  await assert.rejects(stat(resolve(out, 'en/terms/index.html')));
+  await stat(resolve(out, 'en/terms/index.html'));
+  await stat(resolve(out, 'de/agb/index.html'));
+});
+test('privacy pages describe RevenueCat analytics and retention by category', () => {
+  const copy = {
+    de: {
+      analytics: 'auswertung',
+      retention: 'speicherdauer',
+      deletion: 'loeschung',
+      count: 'zusammengefasste Anzahl zahlender Kunden',
+      duration: 'Nutzungsdauer der App',
+      excluded:
+        'Texteingaben, Formularinhalte, Kalkulationen und Bildschirminhalte werden nicht erfasst.',
+      noAds: 'Profiling und Werbung finden nicht statt.',
+      noSdk: 'Ein weiteres SDK setzen wir dafür nicht ein.',
+      basis: 'Art. 6 Abs. 1 lit. f DSGVO',
+      years: '8 bzw. 10 Jahre',
+      yearEnd: 'Schluss des Kalenderjahres',
+      section7: 'Ziffer 7 des Data Processing Addendum',
+      removed: 'Eine konkrete Frist für diese Endnutzer-Kaufdaten veröffentlicht RevenueCat nicht',
+    },
+    en: {
+      analytics: 'analytics',
+      retention: 'retention',
+      deletion: 'deletion',
+      count: 'aggregated number of paying customers',
+      duration: 'duration of app use',
+      excluded:
+        'Text you enter, form contents, calculations and screen contents are not collected.',
+      noAds: 'There is no profiling and no advertising.',
+      noSdk: 'We do not use a further SDK for this.',
+      basis: 'Art. 6(1)(f) GDPR',
+      years: '8 or 10 years',
+      yearEnd: 'end of the calendar year',
+      section7: 'Section 7 of the Data Processing Addendum',
+      removed: 'RevenueCat does not publish a specific period for this end-user purchase data',
+    },
+  };
+  for (const lang of languages) {
+    const expected = copy[lang];
+    const page = pages.find((item) => item.lang === lang && item.page === 'privacy');
+    const app = page.$('#app').parent();
+    const analytics = app.find(`h3#${expected.analytics}`);
+    assert.equal(analytics.length, 1);
+    const retention = app.find(`h3#${expected.retention}`);
+    assert.equal(retention.length, 1);
+    const appText = app.text();
+    assert.ok(appText.includes('offlinehandwerk_premium'));
+    assert.ok(appText.includes(expected.count));
+    assert.ok(appText.includes(expected.duration));
+    assert.ok(appText.includes(expected.excluded));
+    assert.ok(appText.includes(expected.noAds));
+    assert.ok(appText.includes(expected.noSdk));
+    assert.ok(appText.includes(expected.basis));
+    assert.ok(appText.includes('Jan Siems, Hintergasse 28, 67308 Bubenheim'));
+    assert.ok(appText.includes('RevenueCat, Inc. (USA)'));
+    assert.ok(appText.includes('Google Play'));
+    assert.ok(appText.includes('pseudonym'));
+    assert.doesNotMatch(appText, /\banonym/i);
+    assert.ok(appText.includes('Delete Customer'));
+    assert.ok(appText.includes('DELETE /subscribers/{app_user_id}'));
+    assert.ok(appText.includes(expected.section7));
+    assert.ok(appText.includes(expected.years));
+    assert.ok(appText.includes('§ 147 AO'));
+    assert.ok(appText.includes('§ 257 HGB'));
+    assert.ok(appText.includes(expected.yearEnd));
+    assert.equal(appText.includes(expected.removed), false);
+    assert.equal(analytics.nextAll('p').find(`a[href="#${expected.deletion}"]`).length >= 1, true);
+    assert.equal(retention.nextAll('p').find(`a[href="#${expected.deletion}"]`).length, 1);
+    assert.equal(page.$('#website').parent().text().includes('offlinehandwerk_premium'), false);
+  }
 });
