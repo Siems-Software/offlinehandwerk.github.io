@@ -1,7 +1,9 @@
-import { legalPages, redirectsFor, slugFor } from '../config.mjs';
+import { deOnlyLegalPages, legalPages, redirectsFor, slugFor } from '../config.mjs';
+
+const legalKinds = (lang) => [...legalPages, ...(lang === 'de' ? deOnlyLegalPages : [])];
 
 export const staticPages = (lang) => [
-  ...legalPages.map((page) => ({
+  ...legalKinds(lang).map((page) => ({
     params: { page: slugFor(lang, page) },
     props: { kind: page, redirect: null },
   })),

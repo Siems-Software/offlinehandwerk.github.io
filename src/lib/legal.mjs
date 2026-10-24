@@ -61,7 +61,7 @@ export const loadLegal = async () => {
   const documents = {};
   for (const lang of languages) {
     documents[lang] = {};
-    for (const kind of ['privacy', 'imprint']) {
+    for (const kind of ['privacy', 'imprint', ...(lang === 'de' ? ['terms'] : [])]) {
       const source = await readFile(
         resolve(process.cwd(), 'src/content/legal', lang, `${kind}.md`),
         'utf8',

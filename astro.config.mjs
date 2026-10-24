@@ -4,7 +4,7 @@ import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import product from './src/content/product.json' with { type: 'json' };
-import { languages, legalPages, guidePages, prefixDefaultLocale, urlFor } from './src/config.mjs';
+import { languages, routablePages, prefixDefaultLocale, urlFor } from './src/config.mjs';
 
 const themeBlock = (selector, tokens, scheme) =>
   `${selector}{color-scheme:${scheme};${Object.entries(tokens)
@@ -55,9 +55,7 @@ export default defineConfig({
       hooks: {
         'astro:build:done': ({ dir }) => {
           const urls = languages.flatMap((lang) =>
-            ['', ...legalPages, ...guidePages].map(
-              (page) => `<url><loc>${urlFor(lang, page)}</loc></url>`,
-            ),
+            routablePages(lang).map((page) => `<url><loc>${urlFor(lang, page)}</loc></url>`),
           );
           writeFileSync(
             resolve(fileURLToPath(dir), 'sitemap.xml'),

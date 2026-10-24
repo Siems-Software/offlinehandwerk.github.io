@@ -7,7 +7,8 @@ import {
   site,
   languages,
   legalPages,
-  guidePages,
+  routablePages,
+  hasPage,
   slugFor,
   legacyRedirects,
   redirectsFor,
@@ -27,7 +28,7 @@ const legal = await loadLegal();
 const product = await json('src/content/product.json');
 const pages = await Promise.all(
   languages.flatMap((lang) =>
-    ['', ...legalPages, ...guidePages].map(async (page) => ({
+    routablePages(lang).map(async (page) => ({
       lang,
       page,
       route: page ? `${slugFor(lang, page)}/` : '',
@@ -51,7 +52,12 @@ const flatten = (value, prefix = '') =>
 
 test('DE and EN have matching, non-empty translation and legal schemas', () => {
   assert.deepEqual(flatten(locales.de), flatten(locales.en));
-  assert.deepEqual(flatten(legal.de), flatten(legal.en));
+  assert.deepEqual(
+    flatten({ privacy: legal.de.privacy, imprint: legal.de.imprint }),
+    flatten(legal.en),
+  );
+  assert.equal(legal.en.terms, undefined);
+  assert.equal(legal.de.terms.title, 'Allgemeine Geschäftsbedingungen');
   for (const locale of [...Object.values(locales), ...Object.values(legal)]) {
     const check = (value) =>
       Object.values(value).forEach((entry) =>
@@ -66,15 +72,21 @@ test('DE and EN have matching, non-empty translation and legal schemas', () => {
   }
 });
 test('localized pages have correct language, canonical and reciprocal hreflang', () => {
-  assert.equal(pages.length, languages.length * (legalPages.length + guidePages.length + 1));
+  assert.equal(
+    pages.length,
+    languages.reduce((count, lang) => count + routablePages(lang).length, 0),
+  );
   for (const { lang, page, $ } of pages) {
     assert.equal($('html').attr('lang'), lang);
     assert.equal($('link[rel="canonical"]').attr('href'), urlFor(lang, page));
-    for (const code of languages)
-      assert.equal($(`link[hreflang="${code}"]`).attr('href'), urlFor(code, page));
+    for (const code of languages) {
+      const href = $(`link[hreflang="${code}"]`).attr('href');
+      if (hasPage(code, page)) assert.equal(href, urlFor(code, page));
+      else assert.equal(href, undefined);
+    }
     assert.equal($('link[hreflang="x-default"]').attr('href'), urlFor('de', page));
     const other = languages.find((code) => code !== lang);
-    assert.equal($('a.language').attr('href'), pathFor(other, page));
+    assert.equal($('a.language').attr('href'), pathFor(other, hasPage(other, page) ? page : ''));
     assert.equal($('h1').length, 1);
     assert.equal($('main#main').length, 1);
     assert.ok($('title').text().length > 10);
@@ -606,19 +618,25 @@ test('imprint pages show the final provider notice in both languages', () => {
     );
   }
 });
-test('footer shows only privacy and imprint, outside the main navigation', () => {
+test('footer shows privacy and imprint, plus German terms, outside the main navigation', () => {
   for (const { lang, page, $ } of pages) {
+    const expectedHrefs = [pathFor(lang, 'privacy'), pathFor(lang, 'imprint')];
+    const expectedLabels = [locales[lang].privacy, locales[lang].imprint];
+    if (lang === 'de') {
+      expectedHrefs.push(pathFor(lang, 'terms'));
+      expectedLabels.push('AGB');
+    }
     assert.deepEqual(
       $('footer nav a')
         .map((_, element) => $(element).attr('href'))
         .get(),
-      [pathFor(lang, 'privacy'), pathFor(lang, 'imprint')],
+      expectedHrefs,
     );
     assert.deepEqual(
       $('footer nav a')
         .map((_, element) => $(element).text())
         .get(),
-      [locales[lang].privacy, locales[lang].imprint],
+      expectedLabels,
     );
     for (const label of [locales[lang].privacy, locales[lang].imprint]) {
       const matches = $('a').filter((_, element) => $(element).text().trim() === label);
@@ -627,14 +645,14 @@ test('footer shows only privacy and imprint, outside the main navigation', () =>
     }
     assert.equal(
       $(
-        'nav.main-nav a[href*="privacy"], nav.main-nav a[href*="imprint"], nav.main-nav a[href*="datenschutz"], nav.main-nav a[href*="impressum"]',
+        'nav.main-nav a[href*="privacy"], nav.main-nav a[href*="imprint"], nav.main-nav a[href*="datenschutz"], nav.main-nav a[href*="impressum"], nav.main-nav a[href*="/agb/"]',
       ).length,
       0,
     );
     assert.equal($('footer a[href^="mailto:"]').length, 0);
     const other = languages.find((code) => code !== lang);
     assert.equal($('a.language').text().replace(/\s+/g, ' ').trim(), lang.toUpperCase());
-    assert.equal($('a.language').attr('href'), pathFor(other, page));
+    assert.equal($('a.language').attr('href'), pathFor(other, hasPage(other, page) ? page : ''));
     assert.equal($('a.language').attr('aria-label'), locales[lang].switchLabel);
     assert.equal($('a.language').attr('title'), locales[lang].switchLabel);
     assert.equal($('a.language svg').attr('aria-hidden'), 'true');
@@ -711,6 +729,7 @@ test('old privacy and imprint URLs redirect to the localized pages', async () =>
 test('every page links all legal routes and accessible main content', () => {
   for (const { lang, $ } of pages) {
     for (const page of legalPages) assert.ok($(`footer a[href="${pathFor(lang, page)}"]`).length);
+    assert.equal($(`footer a[href="${pathFor('de', 'terms')}"]`).length, lang === 'de' ? 1 : 0);
     assert.equal($('a.skip-link').attr('href'), '#main');
     assert.equal($('img:not([alt])').length, 0);
     assert.equal($('table th:not([scope])').length, 0);
@@ -765,10 +784,11 @@ test('sitemap has every localized canonical URL and not duplicate root/404 URLs'
   const urls = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1]);
   assert.deepEqual(
     urls.sort(),
-    languages
-      .flatMap((lang) => ['', ...legalPages, ...guidePages].map((page) => urlFor(lang, page)))
-      .sort(),
+    languages.flatMap((lang) => routablePages(lang).map((page) => urlFor(lang, page))).sort(),
   );
+  assert.equal(xml.includes('/de/agb/'), true);
+  assert.equal(xml.includes('/en/agb/'), false);
+  assert.equal(xml.includes('/en/terms/'), false);
   assert.equal(xml.includes('/de/privacy/'), false);
   assert.equal(xml.includes('/de/imprint/'), false);
   assert.equal(xml.includes('/de/datenschutz/'), true);
@@ -781,4 +801,47 @@ test('sitemap has every localized canonical URL and not duplicate root/404 URLs'
   assert.equal(xml.includes('privacy-website'), false);
   await stat(resolve(out, '404.html'));
   await stat(resolve(out, '.nojekyll'));
+});
+test('German terms page is the stable store URL and has no English twin', async () => {
+  assert.equal(urlFor('de', 'terms'), 'https://offlinehandwerk.de/de/agb/');
+  const page = pages.find((item) => item.lang === 'de' && item.page === 'terms');
+  const text = page.$('main').text();
+  assert.equal(page.$('h1').text(), 'Allgemeine Geschäftsbedingungen');
+  assert.equal(page.$('main .small').text(), 'Stand: 24.10.2026');
+  assert.equal(page.$('html').attr('lang'), 'de');
+  assert.equal(page.$('link[rel="canonical"]').attr('href'), 'https://offlinehandwerk.de/de/agb/');
+  assert.equal(page.$('link[hreflang="en"]').length, 0);
+  assert.equal(page.$('a.language').attr('href'), '/en/');
+  assert.ok(text.includes('Jan Siems, Hintergasse 28, 67308 Bubenheim, Deutschland'));
+  assert.equal(page.$('a[href="tel:+4917684328001"]').length >= 1, true);
+  assert.ok(text.includes('9,99 € pro Monat'));
+  assert.ok(text.includes('109,99 € pro Jahr'));
+  assert.ok(text.includes('offlinehandwerk_premium'));
+  assert.ok(text.includes('Ein kostenloser Testzeitraum wird nicht eingeräumt.'));
+  assert.ok(text.includes('Die Deinstallation der App beendet das Abonnement nicht.'));
+  assert.ok(
+    text.includes(
+      'Ich bin nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.',
+    ),
+  );
+  assert.ok(
+    text.includes(
+      'Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.',
+    ),
+  );
+  assert.ok(
+    text.includes('Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag des Vertragsabschlusses.'),
+  );
+  assert.ok(text.includes('(*) Unzutreffendes streichen.'));
+  assert.ok(text.includes('§ 356 Absatz 6 BGB'));
+  assert.ok(text.includes('§ 356 Absatz 5 Nummer 2 BGB'));
+  assert.equal(page.$('main a[href="/de/impressum/"]').length, 2);
+  assert.equal(page.$('main a[href="/de/datenschutz/"]').length, 1);
+  assert.equal(page.$('main a[href="/de/#plans"]').length, 1);
+  assert.equal(text.includes('USt-IdNr'), false);
+  assert.equal(text.includes('Umsatzsteuer-Identifikationsnummer'), false);
+  assert.equal(text.includes('ec.europa.eu'), false);
+  assert.doesNotMatch(text, /Entwurf|rechtliche Freigabe|Draft/);
+  await assert.rejects(stat(resolve(out, 'en/agb/index.html')));
+  await assert.rejects(stat(resolve(out, 'en/terms/index.html')));
 });
