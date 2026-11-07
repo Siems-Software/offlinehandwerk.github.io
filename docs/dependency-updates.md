@@ -13,7 +13,7 @@ The dashboard is a dependency inventory, not a website feature request. No open 
 | `actions/deploy-pages`          | v4       | v5.0.1  |
 | `typescript`                    | 5.9.3    | 6.0.3   |
 
-Each action is pinned to its verified release commit, with the release version in a comment. The JavaScript actions use Node 24; the build continues to use Node 24 on `ubuntu-latest`. Workflow triggers, permissions, environment and the main-only deployment condition are unchanged.
+Each action is pinned to its verified release commit, with the release version in a comment. The JavaScript actions and the build use Node 24. Build and deployment require `[self-hosted, Linux, X64, default]`, with no hosted fallback. Fork PR builds are skipped to protect the self-hosted runner. Workflow triggers, permissions, environment and the main-only deployment condition are unchanged.
 
 `upload-pages-artifact` v5 excludes hidden files by default. Explicit `include-hidden-files: true` preserves the previous artifact contents, including `dist/.nojekyll`. The action still excludes `.git` and `.github`.
 

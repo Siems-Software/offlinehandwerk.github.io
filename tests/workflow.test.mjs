@@ -2,8 +2,33 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const workflow = await readFile(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
+const workflow = (
+  await readFile(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8')
+).replaceAll(String.fromCharCode(13), '');
 const readJson = async (path) => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
+
+test('all Pages jobs require the complete self-hosted Linux label set without a fallback', () => {
+  const runners = [...workflow.matchAll(/^    runs-on: (.+)$/gm)].map((match) => match[1]);
+  assert.deepEqual(runners, [
+    '[self-hosted, Linux, X64, default]',
+    '[self-hosted, Linux, X64, default]',
+  ]);
+  assert.doesNotMatch(workflow, /ubuntu-|windows-|macos-|\bmatrix\b|pull_request_target/);
+});
+
+test('fork pull requests cannot execute code on the self-hosted build runner', () => {
+  assert.match(
+    workflow,
+    /build:\n\s+# [^\n]+\n\s+if: github\.event_name != 'pull_request' \|\| github\.event\.pull_request\.head\.repo\.full_name == github\.repository\n/,
+  );
+  assert.match(
+    workflow,
+    /concurrency:\n  group: pages-\$\{\{ github\.ref \}\}\n  cancel-in-progress: false/,
+  );
+  assert.match(workflow, /needs: build/);
+  assert.match(workflow, /permissions:\n      pages: write\n      id-token: write/);
+  assert.match(workflow, /environment:\n      name: github-pages/);
+});
 
 test('Renovate TypeScript updates stay within the installed Astro checker peer range', async () => {
   const config = await readJson('../renovate.json');
