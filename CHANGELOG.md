@@ -14,6 +14,7 @@ Versions are merge dates (`YYYY-MM-DD`), not release numbers. The workflow is in
 
 ### Changed
 
+- Route the website build and Pages deployment to self-hosted Linux runners with all four required labels, without a hosted fallback; skip fork PR builds to protect the runner, disable checkout credential persistence, and add durable actionlint configuration and scoped workflow regression tests (PR #50, Crome696 via agent).
 - Privacy policy in German and English: narrow RevenueCat analytics purpose for the count of paying customers (entitlement `offlinehandwerk_premium`) and app usage duration (PR #46, Refs Siems-Software/OfflineHandwerk#147, Crome696 via agent).
 - Privacy policy in German and English: retention by category for RevenueCat data, Google payout reports, and store data, and the privacy pages' last-updated date (PR #46, Refs Siems-Software/OfflineHandwerk#154, Crome696 via agent).
 - Refreshed `package-lock.json` through Renovate lock file maintenance; no change to `package.json` or site content (PR #49, Crome696 via agent).
