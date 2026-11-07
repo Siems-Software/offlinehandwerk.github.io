@@ -51,7 +51,7 @@ Open `http://127.0.0.1:4311/de/`. `PORT` changes the preview port. The preview s
 
 ## Development
 
-Work on a branch and open a pull request into `main`. The owner reviews and merges; nothing merges automatically. The Pages workflow runs `npm run check` on same-repository pull requests and deploys only `main`. Both jobs require `[self-hosted, Linux, X64, default]`, with no hosted fallback. Fork PR builds are skipped to avoid executing untrusted code on the runner; a skip is not a passing check. Same-repository branches require trusted writers.
+Work on a branch and open a pull request into `main`. The owner reviews and merges; nothing merges automatically. The Pages workflow runs `npm run check` on same-repository pull requests and deploys only `main`. Both jobs require `[self-hosted, Linux, X64, default]`, with no hosted fallback. Fork PR builds are skipped to avoid executing untrusted code on the runner. A skip does not validate the code, although GitHub treats skipped required checks as satisfied. Before merging a fork contribution, a maintainer must review it and run `npm run check` on a trusted same-repository branch; never run arbitrary fork code on the self-hosted runner. Same-repository branches require trusted writers.
 
 Every content change updates [CHANGELOG.md](CHANGELOG.md) in the same pull request. Date headings, the `Unreleased` section, and the rule that a pull request without its changelog entry must not be merged are in [AGENTS.md](AGENTS.md). New pages, changed URLs, and new features update this README in the same change. New conventions are added to `AGENTS.md`.
 
